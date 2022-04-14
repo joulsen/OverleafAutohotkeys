@@ -1,3 +1,14 @@
+; -- Options --
+; Enable Vim-keybinding shortcuts
+VIM_ENABLE = True
+
+; Let all hostrings be immediately activated and inside word
+#Hotstring, ? *
+; --------------
+
+
+; Command for pasting. Resets the clipboard after use.
+; This saves time over sending the data raw through send.
 SafePaste(content)
 {
     temp := clipboard
@@ -13,8 +24,8 @@ SafePaste(content)
 ; Set only in Overleaf
 SetTitleMatchMode, 2
 #IfWinActive Overleaf
-#Hotstring, ? *
 
+; Different math matrices
 ::!bmat::
     SafePaste("\begin{bmatrix}  \end{bmatrix}")
     Send, {Left 14}
@@ -25,19 +36,7 @@ SetTitleMatchMode, 2
     Send, {Ctrl down}{Left 4}{Ctrl Up}{Left 2}
     return
 
-::!subeqb::
-    SafePaste("\begin{subequations}")
-    return
-
-::!subeqe::
-    SafePaste("\end{subequations}")
-    return
-
-::!subeq::
-    SafePaste("\begin{subequations}`n\begin{align}`n`n\end{align}`n\end{subequations}")
-    Send, {Up 2}{Tab}
-    return
-
+; Auto bracket for sub and superscript
 ::_::
     SafePaste("_{}")
     Send, {Left 1}
@@ -46,6 +45,18 @@ SetTitleMatchMode, 2
 ::^::
     SafePaste("^{}")
     Send, {Left 1}
+    return
+
+; Different math brackets
+::!(::
+    SafePaste("\left(  \right)")
+    Send {Left 8}
+    return
+
+; Various environments
+::!subeq::
+    SafePaste("\begin{subequations}`n\begin{align}`n`n\end{align}`n\end{subequations}")
+    Send, {Up 2}{Tab}
     return
 
 ::!si::
@@ -63,6 +74,22 @@ SetTitleMatchMode, 2
     Send {Up 3}{Right 27}
     return
 
+::!tx::
+    SafePaste("\text{}")
+    Send {Left}
+    return
+
+; Make the current file a subfile
+::!subfile::
+    SafePaste("\documentclass[master.tex]{subfiles}`n\begin{document}")
+    Send, {Esc}
+    Sleep, 10
+    Send, Go
+    SafePaste("\end{document}")
+    Send {Esc}gg
+    return
+
+; Go to next <++> and clear it
 +Tab::
     Send, {Esc}
     Send, /
@@ -75,25 +102,7 @@ SetTitleMatchMode, 2
     Send, i
     return
 
+; Go to end of the word while in insert
 +Space::
     Send, {Esc}Ea
-    return
-
-::!subfile::
-    SafePaste("\documentclass[master.tex]{subfiles}`n\begin{document}")
-    Send, {Esc}
-    Sleep, 10
-    Send, Go
-    SafePaste("\end{document}")
-    Send {Esc}gg
-    return
-
-::!(::
-    SafePaste("\left(  \right)")
-    Send {Left 8}
-    return
-
-::!tx::
-    SafePaste("\text{}")
-    Send {Left}
     return
